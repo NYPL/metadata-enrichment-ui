@@ -1,0 +1,97 @@
+@import "variables";
+@import "mixins";
+
+html {
+  font-family: 'Lato', sans-serif;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+p {
+  line-height: 1.4;
+}
+a {
+  color: $blue;
+  text-decoration: none;
+  &:hover {
+    color: lighten($blue, 10%);
+  }
+}
+h1, h2, h3, h4 {
+  font-family: 'Lato Black', sans-serif;
+  font-weight: normal;
+}
+
+// Scaffold
+// -------------------------
+.container {
+  width: 100%;
+  max-width: $standardWidth;
+  margin: 0 auto;
+  position: relative;
+}
+.padded {
+  padding: 1em;
+  @include box-sizing();
+}
+.pull-left {
+  float: left;
+}
+.pull-right {
+  float: right;
+}
+.text-center {
+  text-align: center;
+}
+.span-half {
+  width: 50%;
+}
+.span-third {
+  width: 33.33333333%;
+}
+.span-fourth {
+  width: 25%;
+}
+.hide {
+  display: none;
+}
+.clearfix {
+  @include clearfix();
+}
+
+// Fonts
+// -------------------------
+@font-face {
+  font-family: 'icomoon';
+  src: url('icomoon.eot');
+  src: url('icomoon.eot?#iefix') format('embedded-opentype'),
+       url('icomoon.woff') format('woff'),
+       url('icomoon.ttf')  format('truetype'),
+       url('icomoon.svg#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('lato-reg-webfont.eot');
+  src: url('lato-reg-webfont.eot?#iefix') format('embedded-opentype'),
+       url('lato-reg-webfont.woff') format('woff'),
+       url('lato-reg-webfont.ttf')  format('truetype'),
+       url('lato-reg-webfont.svg#lato') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Lato Black';
+  src: url('lato-bla-webfont.eot');
+  src: url('lato-bla-webfont.eot?#iefix') format('embedded-opentype'),
+       url('lato-bla-webfont.woff') format('woff'),
+       url('lato-bla-webfont.ttf')  format('truetype'),
+       url('lato-bla-webfont.svg#lato') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
