@@ -12,4 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
+//= require ./vendor/underscore-min
+//= require ./vendor/hammer.min
+//= require ./vendor/jquery.hammer

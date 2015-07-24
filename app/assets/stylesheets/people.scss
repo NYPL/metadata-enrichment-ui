@@ -1,0 +1,93 @@
+@import "variables";
+@import "mixins";
+@import "animations";
+
+.people-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: $grayDarkest;
+  overflow: hidden;
+
+  .asset {
+    position: relative;
+    margin: 50px auto 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    cursor: crosshair;
+
+    &.loading {
+      max-width: 100px;
+      max-height: 100px;
+      min-width: 100px;
+      min-height: 100px;
+      margin-top: 120px;
+
+      &:before {
+        content: ' ';
+        display: block;
+        width: 100px;
+        height: 100px;
+        background: $grayLight;
+        @include animation(rotate-plane 1.2s infinite ease-in-out);
+      }
+    }
+
+    .region {
+      position: absolute;
+      cursor: move;
+      border: 3px solid $red;
+      z-index: 10;
+      @include box-shadow(1px, 1px, 2px);
+
+      &:hover {
+        z-index: 100;
+      }
+
+      .ui-resizable-se {
+        cursor: nwse-resize;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        @include icon("I");
+
+        &:before {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          text-align: center;
+          background: $red;
+          color: $white;
+          font-weight: bold;
+          @include transform(rotate(90deg))
+        }
+      }
+    }
+  }
+}
+
+.people-toolbar {
+  text-align: center;
+
+  .message {
+    display: inline-block;
+    font-size: 1.2em;
+    color: $white;
+  }
+
+  .button-next {
+    display: block;
+    position: absolute;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 10px;
+    top: 5px;
+    right: 10px;
+  }
+}

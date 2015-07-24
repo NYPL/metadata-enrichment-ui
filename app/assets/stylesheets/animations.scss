@@ -1,0 +1,51 @@
+@import "mixins";
+
+@mixin animation($animation) {
+  -webkit-animation: $animation;
+  -moz-animation:    $animation;
+  -o-animation:      $animation;
+  animation:         $animation;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+@mixin animation-duration($animation_duration) {
+  -webkit-animation-duration: $animation_duration;
+  -moz-animation-duration:    $animation_duration;
+  -o-animation-duration:      $animation_duration;
+  animation-duration:         $animation_duration;
+}
+@mixin animation-delay($animation_delay) {
+  -webkit-animation-delay: $animation_delay;
+  -moz-animation-delay:    $animation_delay;
+  -o-animation-delay:      $animation_delay;
+  animation-delay:         $animation_delay;
+}
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}
+
+@include keyframes(rotate-plane) {
+  0% {
+    @include transform(perspective(120px) rotateX(0deg) rotateY(0deg));
+  }
+  50% {
+    @include transform(perspective(120px) rotateX(-180.1deg) rotateY(0deg));
+  }
+  100% {
+    @include transform(perspective(120px) rotateX(-180deg) rotateY(-179.9deg));
+  }
+}

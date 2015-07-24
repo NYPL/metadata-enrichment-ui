@@ -1,0 +1,15 @@
+<% content_for :title, "People Identifier" %>
+
+<% content_for :head do %>
+  <%= stylesheet_link_tag    "people", :media => "all" %>
+  <%= javascript_include_tag "people" %>
+<% end %>
+
+<div id="people" class="people-container" data-url="/data/collection_4737-48c27050-c544-012f-0b3f-58d385a7bc34.json">
+  <div id="people-asset" class="asset loading"></div>
+</div>
+
+<div id="toolbar" class="people-toolbar toolbar">
+  <div class="message"></div>
+  <button class="button-next">Skip</button>
+</div>

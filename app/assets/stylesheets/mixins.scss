@@ -37,7 +37,7 @@
   transition:         transform $value;
 }
 
-@mixin font-icon($content: "none") {
+@mixin icon($content: "none") {
   &:before {
     @if ( $content != "none") {
       content: "#{$content}";
