@@ -41,26 +41,26 @@
       cursor: move;
       border: 3px solid $red;
       z-index: 10;
+      @include opacity(0.5);
       @include box-shadow(1px, 1px, 2px);
-
-      &:hover {
-        z-index: 100;
-      }
+      @include transition(opacity, 0.5s);
 
       .ui-resizable-se {
         cursor: nwse-resize;
         position: absolute;
         bottom: 0;
         right: 0;
+        @include opacity(0);
         @include icon("I");
 
         &:before {
           position: absolute;
           bottom: 0;
           right: 0;
-          width: 20px;
-          height: 20px;
-          line-height: 20px;
+          width: 14px;
+          height: 14px;
+          line-height: 14px;
+          font-size: 10px;
           text-align: center;
           background: $red;
           color: $white;
@@ -68,6 +68,72 @@
           @include transform(rotate(90deg))
         }
       }
+
+      &:hover,
+      &.active {
+        z-index: 100;
+        @include opacity(1);
+
+        .ui-resizable-se {
+          @include opacity(1);
+        }
+      }
+    }
+
+    .region-form {
+      background: $yellowLight;
+      position: absolute;
+      width: 200px;
+      height: auto;
+      padding: 10px;
+      display: none;
+      @include opacity(1);
+
+      .selections {
+        display: none;
+        @include animation(fade-in-down 0.5s);
+
+        &.active {
+          display: block;
+        }
+
+        button {
+          display: inline-block;
+          margin: 0 10px 10px 0;
+          background: $red;
+          color: $white;
+          font-weight: normal;
+          font-size: 0.9em;
+          &:hover {
+            background: lighten($red, 10%);
+          }
+          &.active {
+            background: $green;
+            @include icon("V");
+          }
+          &:before {
+            margin-right: 2px;
+          }
+        }
+      }
+
+      .links {
+        font-size: 0.8em;
+        margin-top: 20px;
+        text-align: right;
+
+        .delete-link {
+          color: $red;
+          &:hover {
+            color: lighten($red, 10%);
+          }
+        }
+      }
+    }
+
+    .region.active .region-form.active {
+      display: block;
+      @include animation(fade-in-down 0.5s);
     }
   }
 }

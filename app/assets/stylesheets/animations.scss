@@ -5,10 +5,6 @@
   -moz-animation:    $animation;
   -o-animation:      $animation;
   animation:         $animation;
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  -o-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
 }
 @mixin animation-duration($animation_duration) {
   -webkit-animation-duration: $animation_duration;
@@ -35,6 +31,18 @@
   }
   @keyframes #{$name} {
     @content;
+  }
+}
+
+@include keyframes(fade-in-down) {
+  0% {
+    opacity: 0;
+    @include transform(translate3d(0, -20%, 0));
+  }
+
+  100% {
+    opacity: 1;
+    @include transform(none);
   }
 }
 

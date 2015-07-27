@@ -64,12 +64,25 @@ h1, h2, h3, h4 {
 
 // Components
 // -------------------------
+input {
+  border: 1px solid $grayLighter;
+  background: $white;
+  display: block;
+  outline: none;
+  padding: 0.2em;
+}
+label {
+  display: block;
+  color: $grayDark;
+  font-size: 0.8em;
+  margin-bottom: 10px;
+}
 .button, button {
   background: $grayLighter;
   color: $grayDarkest;
   border: none;
   outline: none;
-  
+
   &:hover {
     background: $grayLightest;
   }
