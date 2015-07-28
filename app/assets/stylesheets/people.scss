@@ -156,4 +156,24 @@
     top: 5px;
     right: 10px;
   }
+
+  .title {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    line-height: 30px;
+    height: 30px;
+    .link {
+      display: block;
+      font-size: 13px;
+      color: $blueLight;
+      max-width: 240px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &:hover {
+        color: lighten($blueLight, 10%);
+      }
+    }
+  }
 }

@@ -19,13 +19,16 @@
       this.$asset = $('#people-asset');
 
       this.data_loaded = new $.Deferred();
+      this.fnames_loaded = new $.Deferred();
+      this.lnames_loaded = new $.Deferred();
 
-      $.when(this.data_loaded).done(function() {
+      $.when(this.data_loaded, this.fnames_loaded, this.lnames_loaded).done(function() {
         _this.loadListeners();
         _this.next();
       });
 
       this.loadData();
+      this.loadNames();
     };
 
     People.prototype.activateRegion = function(id){
@@ -33,14 +36,18 @@
       $('.region[data-id="'+id+'"]').addClass('active');
     };
 
-    People.prototype.addRegion = function(id, active){
-
+    People.prototype.addRegion = function(id, active, styles){
       var _this = this,
           $region = $('<div class="region" data-id="'+id+'"><div class="region-form">'+
             '<div class="selections"><label>Select a name:</label><div class="selection-list"></div><label>Or:</label></div>'+
             '<form class="input"><input value="" class="input-name" placeholder="Enter a name" /></form>'+
-            '<div class="links"><a href="#delete" class="delete-link">Delete this region</a></div>'+
+            '<div class="links"><a href="#skip" class="skip-link">I\'m not sure</a> | <a href="#delete" class="delete-link">Delete this region</a></div>'+
           '</div></div>');
+
+      // add styles
+      if (styles) {
+        $region.css(styles);
+      }
 
       // add region to ui
       this.$asset.append($region);
@@ -48,8 +55,8 @@
       // activate and update button text
       if (active) {
         this.activateRegion(id);
+        this.buttonText("I'm Finished");
       }
-      this.buttonText("I'm Finished");
 
       // make it draggable
       $region.draggable({
@@ -98,6 +105,13 @@
         _this.deleteRegion();
       });
 
+      // skip region link
+      $region.find('.skip-link').on('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        _this.closeRegion();
+      });
+
       // submit input form
       var $inputForm = $region.find('form.input').first();
       $inputForm.on('submit', function(e){
@@ -106,13 +120,35 @@
         _this.submit(true);
       });
 
-      this.loadFieldOptions();
+      this.loadFieldOptions($region);
 
       return $region;
     };
 
     People.prototype.buttonText = function(text){
       $('.button-next').text(text);
+    };
+
+    People.prototype.closeRegion = function(animate){
+      var _this = this,
+          $region = $('.region.active').first();
+
+      if (animate) {
+        setTimeout(function(){
+          $region.find('.region-form').first().animate({
+            'opacity': 0
+          }, 500, function(){
+            $region.removeClass('active');
+            _this.message("Select or drag a box around a person's face");
+            $(this).css({
+              'opacity': 1
+            });
+          });
+        }, 500);
+      } else {
+        $region.removeClass('active');
+        this.message("Select or drag a box around a person's face");
+      }
     };
 
     People.prototype.deleteRegion = function(){
@@ -146,6 +182,40 @@
       this.fixFormPosition();
       $form.addClass('active');
       $form.find('.input-name').first().focus();
+    };
+
+    People.prototype.getNamesFromString = function(str){
+      str = str.toLowerCase().replace(/[^\w\s]/gi, '');
+      var words = str.split(' '),
+          fnames = this.fnames,
+          lnames = this.lnames,
+          fname_i = -1,
+          lname_i = -1,
+          names = [];
+
+      _.each(words, function(word){
+        if (fname_i < 0) fname_i = _.indexOf(fnames, word);
+        else if (fname_i >= 0 && lname_i < 0) lname_i = _.indexOf(lnames, word);
+
+        if (fname_i >= 0 && lname_i >= 0) {
+          if ((lname_i-fname_i) == 1) {
+            names.push(fnames[fname_i] + ' ' + lnames[lname_i]);
+          } else {
+            names.push(fnames[fname_i]);
+            names.push(lnames[lname_i]);
+          }
+          fname_i = -1;
+          lname_i = -1;
+        }
+      });
+
+      if (fname_i >= 0) {
+        names.push(fnames[fname_i]);
+      }
+
+      names = _.uniq(names);
+
+      return names;
     };
 
     People.prototype.getRegionData = function(){
@@ -184,15 +254,50 @@
       });
     };
 
-    People.prototype.loadFieldOptions = function(){
+    People.prototype.loadFaces = function(url){
       var _this = this,
-          $region = $('.region.active').first(),
+          image_url = '/image/proxy?url=' + encodeURIComponent(url),
+          temp_img = new Image();
+
+      temp_img.onload = function(){
+        // retrieve image dimensions
+        var nh = this.naturalHeight,
+            nw = this.naturalWidth;
+
+        $(this).faceDetection({
+            complete: function (faces) {
+              _this.options.debug && console.log('Loaded '+faces.length+' faces')
+
+              _.each(faces, function(face){
+                var id = _.uniqueId('region_'),
+                    styles = {
+                      'width': (face.width * face.scaleX / nw * 100) + '%',
+                      'height': (face.height * face.scaleY / nh * 100) + '%',
+                      'top': (face.y * face.scaleY / nh * 100) + '%',
+                      'left': (face.x * face.scaleX / nw * 100) + '%'
+                    };
+                _this.addRegion(id, false, styles);
+              });
+
+            }
+        });
+      };
+      temp_img.src = image_url;
+    };
+
+    People.prototype.loadFieldOptions = function($region){
+      var _this = this,
+          item = this.items[this.current_i],
           $container = $region.find('.selections').first(),
           $list = $container.find('.selection-list').first(),
-          names = ['Bob Smith', 'Jane Doe', 'Barbara Smith'];
+          title = item.title,
+          names = [];
+
+      names = item.names==undefined? this.getNamesFromString(title) : item.names;
+      this.items[this.current_i].names = names;
 
       _.each(names, function(name){
-        $list.append('<button>'+name+'</button>');
+        $list.append('<button>'+name.capitalize()+'</button>');
       });
 
       if (names.length > 0) {
@@ -284,6 +389,29 @@
 
     };
 
+    People.prototype.loadNames = function(){
+      var _this = this;
+
+      this.fnames = [];
+      this.lnames = [];
+
+      $.getJSON('/data/first-names.json', function(data) {
+        _.each(data, function(item){
+          _this.fnames.push(item.n);
+        });
+        _this.fnames_loaded.resolve();
+        _this.options.debug && console.log('Loaded '+_this.fnames.length+' first names');
+      });
+
+      $.getJSON('/data/last-names.json', function(data) {
+        _.each(data, function(item){
+          _this.lnames.push(item.n);
+        });
+        _this.lnames_loaded.resolve();
+        _this.options.debug && console.log('Loaded '+_this.lnames.length+' last names');
+      });
+    };
+
     People.prototype.message = function(message){
       $('.message').text(message);
     };
@@ -297,12 +425,17 @@
           max_w = $(window).width() * 0.9,
           max_h = $(window).height() * 0.9;
 
+      this.current_i = rand_i;
+
       // reset asset, add loading
       $asset.empty();
       $asset.css({
         'background-image': ''
       });
       $asset.addClass('loading');
+
+      // load title/link
+      $('#toolbar .title .link').text(item.title).attr('href', item.url).attr('title', item.title);
 
       temp_img.onload = function(){
         _this.options.debug && console.log('Loaded image '+item.title);
@@ -331,6 +464,9 @@
         });
         _this.message("Select or drag a box around a person's face");
         _this.buttonText("Skip");
+
+        // load faces
+        _this.loadFaces(item.img_url);
       };
       temp_img.src = item.img_url;
     };
@@ -344,19 +480,9 @@
       data.id = id;
       data.value = value;
       this.options.debug && console.log('Submitting: '+data);
+      this.buttonText("I'm Finished");
 
-      if (animate) {
-        setTimeout(function(){
-          $region.find('.region-form').first().animate({
-            'opacity': 0
-          }, 500, function(){
-            $region.removeClass('active');
-            $(this).css({
-              'opacity': 1
-            });
-          });
-        }, 500);
-      }
+      this.closeRegion(animate);
     };
 
     return People;

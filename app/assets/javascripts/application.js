@@ -15,3 +15,4 @@
 //= require ./vendor/underscore-min
 //= require ./vendor/hammer.min
 //= require ./vendor/jquery.hammer
+//= require helpers
