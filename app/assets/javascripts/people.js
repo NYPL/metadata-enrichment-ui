@@ -70,7 +70,7 @@
           e.stopPropagation();
           var values = _this.getRegionData();
           values.id = $(this).attr('data-id');
-          _this.submit();
+          //_this.submit();
           _this.formShow();
         }
 
@@ -86,7 +86,7 @@
           e.stopPropagation();
           var values = _this.getRegionData();
           values.id = $(this).attr('data-id');
-          _this.submit();
+          //_this.submit();
           _this.formShow();
         }
       });
@@ -194,15 +194,29 @@
           names = [];
 
       _.each(words, function(word){
-        if (fname_i < 0) fname_i = _.indexOf(fnames, word);
-        else if (fname_i >= 0 && lname_i < 0) lname_i = _.indexOf(lnames, word);
+        var match_fname_i = _.indexOf(fnames, word),
+            match_lname_i = _.indexOf(lnames, word);
+
+        if (fname_i < 0) {
+          fname_i = match_fname_i;
+        } else if (fname_i >= 0 && lname_i < 0 && match_fname_i >= 0) {
+          names.push(fnames[fname_i]);
+          fname_i = match_fname_i;
+        } else if (fname_i >= 0 && lname_i < 0) {
+          lname_i = match_lname_i;
+        }
 
         if (fname_i >= 0 && lname_i >= 0) {
-          if ((lname_i-fname_i) == 1) {
-            names.push(fnames[fname_i] + ' ' + lnames[lname_i]);
+          var fname = fnames[fname_i],
+              lname = lnames[lname_i];
+
+          // fname and lname occur next to each other
+          if (Math.abs(words.indexOf(lname)-words.indexOf(fname)) == 1) {
+            names.push(fname + ' ' + lname);
+
           } else {
-            names.push(fnames[fname_i]);
-            names.push(lnames[lname_i]);
+            names.push(fname);
+            names.push(lname);
           }
           fname_i = -1;
           lname_i = -1;
@@ -257,7 +271,8 @@
     People.prototype.loadFaces = function(url){
       var _this = this,
           image_url = '/image/proxy?url=' + encodeURIComponent(url),
-          temp_img = new Image();
+          temp_img = new Image(),
+          current_i = this.current_i;
 
       temp_img.onload = function(){
         // retrieve image dimensions
@@ -268,17 +283,18 @@
             complete: function (faces) {
               _this.options.debug && console.log('Loaded '+faces.length+' faces')
 
-              _.each(faces, function(face){
-                var id = _.uniqueId('region_'),
-                    styles = {
-                      'width': (face.width * face.scaleX / nw * 100) + '%',
-                      'height': (face.height * face.scaleY / nh * 100) + '%',
-                      'top': (face.y * face.scaleY / nh * 100) + '%',
-                      'left': (face.x * face.scaleX / nw * 100) + '%'
-                    };
-                _this.addRegion(id, false, styles);
-              });
-
+              if (current_i == _this.current_i) {
+                _.each(faces, function(face){
+                  var id = _.uniqueId('region_'),
+                      styles = {
+                        'width': (face.width * face.scaleX / nw * 100) + '%',
+                        'height': (face.height * face.scaleY / nh * 100) + '%',
+                        'top': (face.y * face.scaleY / nh * 100) + '%',
+                        'left': (face.x * face.scaleX / nw * 100) + '%'
+                      };
+                  _this.addRegion(id, false, styles);
+                });
+              }
             }
         });
       };
